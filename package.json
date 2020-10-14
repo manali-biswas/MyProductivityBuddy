@@ -1,0 +1,27 @@
+{
+  "name": "myproductivitybuddy",
+  "version": "1.0.0",
+  "description": "This will be a productivity web application.<br />\r Some calendar APIs will be explored as a part of this.",
+  "main": "app.js",
+  "dependencies": {
+    "ejs": "^3.1.5",
+    "express": "^4.17.1",
+    "googleapis": "^39.2.0",
+    "nodemon": "^2.0.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start":"nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manali-biswas/MyProductivityBuddy.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/manali-biswas/MyProductivityBuddy/issues"
+  },
+  "homepage": "https://github.com/manali-biswas/MyProductivityBuddy#readme"
+}
