@@ -13,7 +13,11 @@ app.get('/',function(req,res){
 
 app.get('/google',function(req,res){
     res.render('google');
-})
+});
+
+app.get('/timer',function(req,res){
+    res.render('timer')
+});
 
 app.listen(port,process.env.IP,function(){
     console.log('Server is listening at '+port);
