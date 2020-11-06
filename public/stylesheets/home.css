@@ -1,4 +1,8 @@
-body{    
+html,body{
+    height: 100%;
+    width: 100%;
+}
+main{    
     height: 100%;
     width: 100%;
     display: flex;
@@ -8,10 +12,6 @@ body{
     background-color: rgb(192, 255, 197);
 }
 
-html{
-    height: 100%;
-    width: 100%;
-}
 
 .buttons{
     flex-direction: row;
