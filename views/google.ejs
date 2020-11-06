@@ -14,8 +14,9 @@
     <button id="authorize_button" class="btn btn-primary" style="display: none;">Authorize</button>
     <button id="signout_button" class="btn btn-primary" style="display: none;">Sign Out</button>
     <br>
+    <p>Upcoming Events in 24 hours:</p>
     <div class="panel panel-default">
-    <pre id="content" class="panel-body" style="white-space: pre-wrap;"></pre>
+    <pre id="content" class="panel-body" style="white-space: pre-wrap; text-align-last: right;"></pre>
   </div>
 
     <script type="text/javascript">
@@ -91,6 +92,7 @@
        *  Sign out the user upon button click.
        */
       function handleSignoutClick(event) {
+        clearPre();
         gapi.auth2.getAuthInstance().signOut();
       }
 
@@ -104,6 +106,15 @@
         var pre = document.getElementById('content');
         var textContent = document.createTextNode(message + '\n');
         pre.appendChild(textContent);
+      }
+
+      /**
+       * Clears a pre element when signing out
+       *        
+       */
+       function clearPre() {
+        var pre = document.getElementById('content');
+        pre.innerHTML='';
       }
 
       /**
@@ -122,7 +133,6 @@
           'orderBy': 'startTime'
         }).then(function(response) {
           var events = response.result.items;
-          appendPre('Upcoming events in 24 hours:');
           appendPre('');
 
           if (events.length > 0) {
@@ -132,7 +142,12 @@
               if (!when) {
                 when = event.start.date;
               }
-              appendPre(event.summary + ' (' + when + ')')
+              var to = event.end.dateTime;
+              if (!to) {
+                to = event.end.date;
+              }
+              appendPre(event.summary + '  Starts:(' + new Date(when) + ')')
+              appendPre('Ends:('+ new Date(to) + ')')
             }
           } else {
             appendPre('No upcoming events found.');

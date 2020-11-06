@@ -2,8 +2,20 @@
     text-align:center;
 }
 
+h1{
+    text-decoration: underline;
+}
+
 .form-control{
     margin-left: 5%;
     width: 20%;
     display: inline;
+}
+
+.n{
+    display: none;
+}
+
+.x{
+    justify-content: center;
 }
