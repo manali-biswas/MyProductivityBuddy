@@ -1,27 +1,50 @@
 <%-include("partials/header.ejs")%>
 <link rel="stylesheet" href="/stylesheets/timer.css">
 <div class="container">
-<a href="/">
-    <span class="glyphicon glyphicon-home" aria-hidden="true"></span></a>
-<div class="container all">
-    
-<h1>Timer</h1>
+<div class="container all">    
+<h1>Timers</h1>
+<br>
+<div class="row x">
+  <% userdata.timers.forEach(function(timer){%>
+      <div class="col-sm-6 col-md-3">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title"><%=timer.title%></h5>
+            <p class="card-text time">Time: <span class="hours"><%=timer.hours%></span>/
+              <span class="minutes"><%=timer.minutes%></span>/
+              <span class="seconds"><%=timer.seconds%></span>
+            </p>
+            <button class="btn btn-primary select">Select</button>
+          </div>
+        </div>
+      </div>
+  <%})%>
+</div>
+<hr>
+<br>
 <p>Select the countdown timing</p>
-<div class="custom-control custom-radio">
-    <label class="custom-control-label" for="hours">Hours</label>
-    <input type="number" id="hours" name="hours" class="custom-control-input" min="00" max="23" placeholder="0">    
+<form class="form" method="POST" action="/timer">
+<div class="form-group">
+    <label for="hours" >Hours</label>
+    <input type="number" id="hours" name="hours" class="form-control" min="00" max="23" value="0">    
   </div>
-  <div class="custom-control custom-radio">
-    <label class="custom-control-label" for="minutes">Minutes</label>
-    <input type="number" id="minutes" name="minutes" class="custom-control-input" min="00" max="59" placeholder="0">
+  <div class="form-group">
+    <label for="minutes">Minutes</label>
+    <input type="number" id="minutes" name="minutes" class="form-control" min="00" max="59" value="0">
     
   </div>
-  <div class="custom-control custom-radio">
-    <label class="custom-control-label" for="seconds">Seconds</label>
-    <input type="number" id="seconds" name="seconds" class="custom-control-input" min="00" max="59" placeholder="0">    
+  <div class="form-group">
+    <label for="seconds">Seconds</label>
+    <input type="number" id="seconds" name="seconds" class="form-control" min="00" max="59" value="0">    
+  </div>
+  <div class="form-group n">
+    <label for="title">Title</label>
+    <input type="text" id="title" name="title" class="form-control">    
   </div>
   <br>
-  <button class="btn btn-primary start">Start</button>  
+  <button type='button' class="btn btn-primary start">Start</button>
+    <button type='submit' class='btn btn-dark save'>Save Timer</button>
+  </form>
   <p id="timeleft"></p>
   <p id="timeup"></p>
 </div>

@@ -28,3 +28,18 @@ $(".start").on("click",function(event){
         
     },1000);   
 });
+
+$('.select').on('click',function(event){
+    const time=$(this).prev();
+    const hours=time.find('.hours').text();
+    const minutes=time.find('.minutes').text();
+    const seconds=time.find('.seconds').text();
+    $('#hours').val(parseInt(hours));
+    $('#minutes').val(parseInt(minutes));
+    $('#seconds').val(parseInt(seconds));
+});
+
+$('.save').on('click',function(event){
+    const title = prompt('Enter the Timer name');
+    $('#title').val(title);
+});
