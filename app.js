@@ -5,8 +5,10 @@ const mongoose=require('mongoose');
 const passport=require('passport');
 const localStrategy=require('passport-local');
 const expressSession=require('express-session');
+const methodOverride=require('method-override');
 const User=require('./models/user');
 const Timer=require('./models/timer');
+const Task=require('./models/task');
 
 
 mongoose.connect('mongodb+srv://manali:remember617@cluster0.dakug.mongodb.net/productivity?retryWrites=true&w=majority',{useNewUrlParser:true,useUnifiedTopology:true});
@@ -14,6 +16,7 @@ mongoose.connect('mongodb+srv://manali:remember617@cluster0.dakug.mongodb.net/pr
 app.use(express.static("public"));
 app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
+app.use(methodOverride('_method'));
 
 app.use(expressSession({
     secret: "Manali",
@@ -32,6 +35,17 @@ app.use(function(req,res,next){
     res.locals.currentUser = req.user;
     next();
 });
+
+function groupBy(objectArray, property){
+    return objectArray.reduce(function(acc,obj){
+        const key = obj[property];
+        if(!acc[key]){
+            acc[key]=[]
+        }
+        acc[key].push(obj);
+        return acc;
+    },{});
+};
 
 const middleware=function(req,res,next){
     if(req.isAuthenticated()){
@@ -88,6 +102,102 @@ app.post('/timer',middleware,function(req,res){
             });
         }
     });    
+});
+
+app.put('/timer/:id',middleware,function(req,res){
+    const timer={
+        hours: parseInt(req.body.hours2),
+        minutes: parseInt(req.body.minutes2),
+        seconds: parseInt(req.body.seconds2)
+    }
+    Timer.findByIdAndUpdate(req.params.id,timer,function(err,task){
+        if(err){
+            console.trace(err);
+            res.redirect('/');
+        }
+        else{
+            res.redirect('/timer');
+        }
+    });
+});
+
+app.delete('/timer/:id',middleware,function(req,res){
+    Timer.findByIdAndDelete(req.params.id,function(err){
+        if(err){
+            console.trace(err);
+            res.redirect('/');
+        }
+        else{
+            res.redirect('/timer');
+        }
+    });
+});
+
+app.get('/tasks',middleware,function(req,res){
+    User.findById(req.user.id).populate('tasks').exec(function(err,user){
+        if(err){
+            console.trace(err);
+            res.redirect('/');
+        }
+        tasks=groupBy(user.tasks,'date');
+        const orderedtasks={};
+        Object.keys(tasks).sort().forEach(function(key){
+            orderedtasks[key]=tasks[key];
+        });
+        res.render('tasks',{tasks:orderedtasks});
+    });    
+});
+
+app.post('/tasks',middleware,function(req,res){
+    const task = {
+        title: req.body.title,
+        date: req.body.date,
+        userid: req.user
+    }
+
+    User.findById(req.user.id,function(err,user){
+        if(err){
+            console.trace(err);
+            res.redirect('/');
+        }
+        else{
+            Task.create(task, function(err, task){
+                if(err){
+                    console.trace(err);
+                    res.redirect('/');
+                }
+                else{
+                    user.tasks.push(task);
+                    user.save();
+                    res.redirect('/tasks');
+                }
+            });
+        }
+    }); 
+});
+
+app.put('/tasks/:id',middleware,function(req,res){
+    Task.findByIdAndUpdate(req.params.id,{title:req.body.title},function(err,task){
+        if(err){
+            console.trace(err);
+            res.redirect('/');
+        }
+        else{
+            res.redirect('/tasks');
+        }
+    });
+});
+
+app.delete('/tasks/:id',middleware,function(req,res){
+    Task.findByIdAndDelete(req.params.id,function(err){
+        if(err){
+            console.trace(err);
+            res.redirect('/');
+        }
+        else{
+            res.redirect('/tasks');
+        }
+    });
 });
 
 app.get('/signup',function(req,res){

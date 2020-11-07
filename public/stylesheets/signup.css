@@ -16,7 +16,7 @@ main{
     z-index:2000;
     height:fit-content;
     width: 100%;
-    position: fixed;
+    position: absolute;
     background-color: white;
     outline: 9999px solid rgba(0,0,0,0.5);
 }
@@ -28,4 +28,9 @@ main{
 .x{
     text-align: center;
     text-decoration: underline;
+}
+
+.t{
+    color: white;
+    background-color: rgb(178, 99, 235);
 }
