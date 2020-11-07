@@ -43,3 +43,27 @@ $('.save').on('click',function(event){
     const title = prompt('Enter the Timer name');
     $('#title').val(title);
 });
+
+$('.edit').on('click',function(event){
+    const btn=$(this);
+    btn.addClass('hid');
+    const btn2=btn.next('.myc');
+    btn2.removeClass('hid');
+    btn2.addClass('on');
+    const form=$(this).closest('form');
+    const hours=form.find('.a');
+    hours.removeClass('hid');
+    hours.addClass('on');
+    const minutes=form.find('.b');
+    minutes.removeClass('hid');
+    minutes.addClass('on');
+    const seconds=form.find('.c');
+    seconds.removeClass('hid');
+    seconds.addClass('on');
+    const h=form.find('.hours');
+    h.addClass('hid');
+    const m=form.find('.minutes');
+    m.addClass('hid');
+    const s=form.find('.seconds');
+    s.addClass('hid');
+});
