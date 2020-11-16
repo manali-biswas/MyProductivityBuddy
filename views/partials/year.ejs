@@ -1,0 +1,16 @@
+<%var x=new Date(date); var today=new Date();%>
+<h4><%=x.getFullYear()%></h4>
+<!--Button group for months-->
+<div class="row">
+    <% var year=['January','February','March','April','May','June','July','August','September','October','November','December'];%>
+    <% for(var i=0;i<3;i++){%>
+    <div class="btn-group btn-group-lg col-sm-12" role="group">
+        <% for(var j=i*4;j<(i+1)*4;j++){%>
+            <% if(x.getFullYear()==today.getFullYear()&&year[j]==today.toLocaleString('default',{month:'long'})){%>
+        <button type="button" class="btn btn-primary yearbtn" id='<%=year[j]%>'><%=year[j]%></button>
+        <%}else{%>
+            <button type="button" class="btn btn-secondary yearbtn" id='<%=year[j]%>'><%=year[j]%></button>
+        <%}}%>
+    </div>
+    <%}%>
+</div>

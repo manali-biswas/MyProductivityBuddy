@@ -1,3 +1,8 @@
+function PlaySound(soundObj){
+    const sound=document.getElementById(soundObj);
+    sound.play();
+}
+
 $(".start").on("click",function(event){
     document.getElementById("timeleft").innerHTML='';
     document.getElementById("timeup").innerHTML='';
@@ -24,6 +29,7 @@ $(".start").on("click",function(event){
             document.getElementById("timeleft").innerHTML='0:0:0';
             clearInterval(func);
             document.getElementById("timeup").innerHTML='Time Up!';
+            PlaySound("sound1");
         }
         
     },1000);   

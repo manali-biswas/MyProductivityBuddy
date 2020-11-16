@@ -11,7 +11,11 @@ const userSchema = new mongoose.Schema({
     tasks:[{
         type: mongoose.Schema.Types.ObjectId,
         ref:"Task"
-    }]
+    }],
+    google:{
+        accessToken: String,
+        refreshToken: String
+    }
 });
 
 userSchema.plugin(passportLocalMongoose);

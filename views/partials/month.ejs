@@ -1,0 +1,36 @@
+<% var x=new Date(date); var month=((x.getMonth()==11)?0:x.getMonth()+1); var first=new Date(x.getFullYear(),x.getMonth(),1);%>
+<%if(month==0) var last=new Date(x.getFullYear()+1,0,1); else var last=new Date(x.getFullYear(),month,1); last.setDate(last.getDate()-1); var weeks=((first.getDay()-0)+(6-last.getDay())+(last.getDate()-first.getDate()+1))/7;%>
+<%first.setDate(first.getDate()-first.getDay());%>
+<%var week=['Sun','Mon','Tue','Wed','Thu','Fri','Sat']; var today=new Date();%>
+<h4><%=x.toLocaleString('default',{month:'long'}) %> <%=x.getFullYear()%></h4>
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-light table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <% week.forEach(function(day){%>
+                    <th scope="col"><%=day%></th>
+                <%})%>
+            </tr>
+        </thead>
+        <tbody>
+            <%for(var i=0;i<weeks;i++){%>
+            <tr>
+            <% for( var j=0;j<=6;j++){%>
+                <%if(first.getMonth()==x.getMonth()){%>
+                    <% if(first.toDateString()==today.toDateString()){%>
+                    <td class="monthbtn bg-primary" id="<%=first.toString()%>"><%=first.getDate()%></td>
+                    <%}else{%>
+                    <td class="monthbtn" id="<%=first.toString()%>"><%=first.getDate()%></td>
+                <%}}else{%>
+                    <% if(first.toDateString()==today.toDateString()){%>
+                    <td class="monthbtn text-muted bg-primary" id="<%=first.toString()%>"><%=first.getDate()%></td>
+                    <%}else{%>
+                    <td class="monthbtn text-muted" id="<%=first.toString()%>"><%=first.getDate()%></td>
+                <%}}%>
+            <%first.setDate(first.getDate()+1); %>
+            <%}%>
+            </tr>
+            <%}%>
+        </tbody>
+    </table>
+    </div>
