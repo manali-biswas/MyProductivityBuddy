@@ -15,7 +15,7 @@ const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const {getAuth, listEvents}=require('./public/logic/google');
 
 //connecting to database
-mongoose.connect('mongodb+srv://manali:remember617@cluster0.dakug.mongodb.net/productivity?retryWrites=true&w=majority',{useNewUrlParser:true,useUnifiedTopology:true});
+mongoose.connect('mongodb+srv://manali:remember617@cluster0.dakug.mongodb.net/productivity?retryWrites=true&w=majority',{useNewUrlParser:true,useUnifiedTopology:true,useFindAndModify:true});
 
 //declaring functions to be used by all routes
 app.use(express.static("public"));
@@ -97,6 +97,42 @@ function groupBy(objectArray, property){
     },{});
 };
 
+function groupPeriod(events,userevents, date){
+    var req=new Date(date);
+    if(!events[date]){
+        events[date]=[];
+    }
+            userevents.forEach(function(event){    
+                var pre=new Date(event.date);
+                if(req-pre>0){
+                if(event.repeat.period=='daily'){
+                    events[date].push(event);
+                }
+                else if(event.repeat.period=='weekly'&&req.getDay()==pre.getDay()){
+                    events[date].push(event);
+                }
+                else if(event.repeat.period=='monthly'&&req.getDate()==pre.getDate()){
+                    events[date].push(event);
+                }
+                else if(event.repeat.period=='yearly'&&req.getDate()==pre.getDate()&&req.getMonth()==pre.getMonth()){
+                    events[date].push(event);
+                }}
+            });
+        
+    return events;
+};
+
+function groupByTime(objectArray, property){
+    return objectArray.reduce(function(acc,obj){
+        const key = obj[property].getHours();
+        if(!acc[key]){
+            acc[key]=[]
+        }
+        acc[key].push(obj);
+        return acc;
+    },{});
+};
+
 const middleware=function(req,res,next){
     if(req.isAuthenticated()){
         return next();
@@ -111,7 +147,7 @@ const gmiddle=function(req,res,next){
                 console.log(err);
                 res.redirect('/auth/google');
             }else{
-                if(user.google.accessToken){
+                if(user.google.accessToken){// refresh access token
                     return next();
                 }
                 else{
@@ -136,21 +172,167 @@ app.get('/events',middleware,function(req,res){
     res.render('events');
 });
 
+// save a calendar
+app.post('/events',middleware,function(req,res){
+    var repeat;
+    if(req.body.repeat == "false")
+    {
+        repeat={
+            value: false,
+            period: undefined
+        }
+    }
+    else
+    {
+        repeat={
+            value: true,
+            period: req.body.repeat
+        }
+    }
+    const date=new Date(req.body.date);
+    var event={
+        title: req.body.title,
+        date: date.toLocaleDateString(),
+        start: new Date(req.body.date+' '+req.body.start),
+        end: new Date(req.body.date+' '+req.body.end),
+        repeat: repeat,
+        userid: req.user
+    }
+    User.findById(req.user.id,function(err,user){
+        if(err){
+            console.trace(err);
+            res.redirect('/');
+        }
+        else{
+            Event.create(event, function(err, event){
+                if(err){
+                    console.trace(err);
+                    res.redirect('/');
+                }
+                else{
+                    user.events.push(event);
+                    user.save();
+                    res.redirect('/events');
+                }
+            });
+        }
+    });    
+});
+
+// editing an event route
+app.put('/events/:id',middleware,function(req,res){
+    const event={
+        title: req.body.title
+    };
+    Event.findByIdAndUpdate(req.params.id,event,function(err,task){
+        if(err){
+            console.trace(err);
+            res.redirect('/');
+        }
+        else{
+            res.redirect('/events');
+        }
+    });
+});
+
+app.delete('/events/:id',middleware,function(req,res){
+    Event.findByIdAndDelete(req.params.id,function(err){
+        if(err){
+            console.trace(err);
+            res.redirect('/');
+        }
+        else{
+            res.redirect('/events');
+        }
+    });
+});
+
 app.post('/events/day',middleware,function(req,res){
-    res.render('partials/day',{date: req.body.date});
+    User.findById(req.user.id).populate('events').exec(function(err,user){
+        if(err){
+            console.trace(err);
+            res.redirect('/');
+        }
+        else{  
+            const date=new Date(req.body.date);
+            var events=groupBy(user.events,'date');
+            events=groupPeriod(events,user.events,date.toLocaleDateString());
+            if(events[date.toLocaleDateString()])
+            res.render('partials/day',{date: req.body.date,events: groupByTime(events[date.toLocaleDateString()],'start')});
+            else
+            res.render('partials/day',{date: req.body.date,events: {}});
+        }
+    });
 });
 
 app.post('/events/week',middleware,function(req,res){
-    res.render('partials/week',{date: req.body.date});
+    User.findById(req.user.id).populate('events').exec(function(err,user){
+        if(err){
+            console.trace(err);
+            res.redirect('/');
+        }
+        else{  
+            var x=new Date(req.body.date); 
+            var last=new Date(x.toDateString());
+            var weekevents={};
+            last.setDate(last.getDate()+7-last.getDay()); 
+            x.setDate(x.getDate()-x.getDay());
+            const date=new Date(req.body.date);
+            date.setDate(date.getDate()-date.getDay());
+            var events=groupBy(user.events,'date');
+            for(;x.toDateString()!=last.toDateString();x.setDate(x.getDate()+1))
+            {
+                events=groupPeriod(events,user.events,x.toLocaleDateString());
+                if(events[x.toLocaleDateString()]){                    
+                    weekevents[x.toLocaleDateString()]=groupByTime(events[x.toLocaleDateString()],'start');
+                }
+                else{
+                    weekevents[x.toLocaleDateString()]={};
+                }
+            }
+            last.setDate(last.getDate()-1);
+            res.render('partials/week',{x: date,last: last, events: weekevents});    
+        }
+    });
 });
 
 app.post('/events/month',middleware,function(req,res){
-    res.render('partials/month',{date: req.body.date});
+    User.findById(req.user.id).populate('events').exec(function(err,user){
+        if(err){
+            console.trace(err);
+            res.redirect('/');
+        }
+        else{ 
+            var x=new Date(req.body.date); 
+            var month=((x.getMonth()==11)?0:x.getMonth()+1); 
+            var first=new Date(x.getFullYear(),x.getMonth(),1);
+            var last;
+            if(month==0) last=new Date(x.getFullYear()+1,0,1); 
+            else last=new Date(x.getFullYear(),month,1); 
+            last.setDate(last.getDate()-1);
+            var weeks=((first.getDay()-0)+(6-last.getDay())+(last.getDate()-first.getDate()+1))/7;
+            first.setDate(first.getDate()-first.getDay());
+            last.setDate(last.getDate()-last.getDay()+6);
+            var events=groupBy(user.events,'date');
+            var y=new Date(first.toLocaleDateString());
+            last.setDate(last.getDate()+1);
+            for(;y.toDateString()!=last.toDateString();y.setDate(y.getDate()+1)){
+                events=groupPeriod(events,user.events,y.toLocaleDateString());
+            }
+            last.setDate(last.getDate()-1);
+            res.render('partials/month',{x: x,first:first,last: last,weeks:weeks, events: events});    
+        }
+    });
 });
 
 app.post('/events/year',middleware,function(req,res){
     res.render('partials/year',{date: req.body.date});
 });
+
+app.post('/events/decade',middleware,function(req,res){
+    res.render('partials/decade',{date: req.body.date});
+});
+
 
 // google calendar route
 app.get('/google',gmiddle,function(req,res){
@@ -332,7 +514,8 @@ app.get('/auth/google', passport.authenticate('google',{
     scope: ['https://www.googleapis.com/auth/plus.login',
     'https://www.googleapis.com/auth/userinfo.email',
         "https://www.googleapis.com/auth/calendar.readonly"
-      ]
+      ],
+      accessType:'offline'
 }));
 
 // google oauth callback route

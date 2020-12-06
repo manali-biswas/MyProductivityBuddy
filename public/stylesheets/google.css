@@ -20,7 +20,7 @@ h1{
 }
 
 .small{
-    width: 60%;
+    width: 80%;
 }
 
 .n{
@@ -29,4 +29,8 @@ h1{
 
 .d{
     display: block;
+}
+
+.on{
+    display:inline;
 }

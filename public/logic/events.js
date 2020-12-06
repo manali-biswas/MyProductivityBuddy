@@ -39,6 +39,12 @@ $('.dropdown-item').on('click',function(event){
         }});
         t.html('Year');
     }
+    else if(id=="#decade"){
+        $.ajax({type:'POST',url:"/events/decade", data:{date:date},success:function(result){
+            target.html(result);
+        }});
+        t.html('Decade');
+    }
 });
 
 // incrementing the calendar view dates
@@ -71,7 +77,12 @@ $('.inc').on('click',function(event){
             $('#year').html(result);
         }});
     }
-    
+    else if(id=="decade"){
+        date.setFullYear(date.getFullYear()+10);
+        $.ajax({type:'POST',url:"/events/decade", data:{date:date},success:function(result){
+            $('#decade').html(result);
+        }});
+    }
 });
 
 // decrementing the calendar view dates
@@ -104,7 +115,33 @@ $('.dec').on('click',function(event){
             $('#year').html(result);
         }});
     }
-    
+    else if(id=="decade"){
+        date.setFullYear(date.getFullYear()-10);
+        $.ajax({type:'POST',url:"/events/decade", data:{date:date},success:function(result){
+            $('#decade').html(result);
+        }});
+    }
+});
+
+// to display year when clicked in the decade view
+$(document).on('click','.decadebtn',function(event){
+    var id=$(this).attr('id');
+    var t=$('.dropdown-toggle');
+    t.html('Year');
+    date=new Date(id,0,1);
+    $.ajax({type:'POST',url:'/events/year',data:{date:date},success:function(result){
+        $('#year').html(result);
+    }});
+    var target=$('#year');
+    target.addClass('d');
+    target.removeClass('n');
+    var ex=$('#decade');
+    ex.removeClass('d');
+    ex.addClass('n');
+    var dtarget=$("a[href$='#year']");
+    var dex=$("a[href$='#decade']");
+    dex.removeClass('active');
+    dtarget.addClass('active');    
 });
 
 // to display month when clicked in the year view
@@ -170,4 +207,20 @@ $(document).on('click','.weekbtn',function(){
     var dex=$("a[href$='#week']");
     dex.removeClass('active');
     dtarget.addClass('active'); 
+});
+
+// function to edit event name
+$(document).on('click','.edit',function(event){
+    const btn=$(this);
+    btn.addClass('n');
+    const btn2=btn.next('.myc');
+    btn2.removeClass('n');
+    btn2.addClass('on');
+    const form=$(this).closest('form');
+    const events=form.find('.a');
+    events.removeClass('n');
+    events.addClass('on');
+    const h=form.find('.event');
+    h.addClass('n');
+    event.stopPropagation();
 });
