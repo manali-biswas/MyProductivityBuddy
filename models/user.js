@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
     google:{
         accessToken: String,
         refreshToken: String
+    },
+    microsoft:{
+        accessToken: String,
+        refreshToken: String
     }
 });
 

@@ -1,0 +1,38 @@
+<%-include("partials/header.ejs")%>
+    <link type='text/css' rel='stylesheet' href='/stylesheets/google.css'>    
+    <div class="container h-100">
+        <div class="container first">  
+            <br>  
+
+            <h1> Microsoft Outlook Calendar <img src="../assets/microsoft-outlook-2019-50.png"></h1>  
+
+            <br>
+
+            <p>Upcoming Events in 24 hours:</p>
+            <!--Ask for timezone-->
+            <div class="table-responsive x">
+                <table class="table table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                        <th scope="col">Organizer</th>
+                        <th scope="col">Subject</th>
+                        <th scope="col">Start</th>
+                        <th scope="col">End</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% events.forEach(function(event){%>
+                        <tr>
+                            <td><%=event.organizer.emailAddress.name%></td>
+                            <td><%=event.subject%></td>
+                            <td><%=new Date(event.start.dateTime).toLocaleString()%></td>
+                            <td><%=new Date(event.end.dateTime).toLocaleString()%></td>
+                        </tr>
+                        <%})%>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+<%-include("partials/footer.ejs")%>

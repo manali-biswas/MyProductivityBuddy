@@ -12,7 +12,9 @@ const Timer=require('./models/timer');
 const Task=require('./models/task');
 const Event=require('./models/event');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const MicrosoftStrategy = require('passport-microsoft').Strategy;
 const {getAuth, listEvents}=require('./public/logic/google');
+const {getGraphAuth, getCalendarView}=require('./public/logic/microsoft');
 
 //connecting to database
 mongoose.connect('mongodb+srv://manali:remember617@cluster0.dakug.mongodb.net/productivity?retryWrites=true&w=majority',{useNewUrlParser:true,useUnifiedTopology:true,useFindAndModify:true});
@@ -76,6 +78,49 @@ passport.use(new GoogleStrategy({
         }
     });
 }));
+passport.use(new MicrosoftStrategy({
+    clientID: '14c15fd0-d4e1-4347-ab3e-dc6126fd9340',
+    clientSecret: 'dZ~n-IfU0x~8b7rMO4_w.lt2-52can0-W_',
+    callbackURL: 'http://localhost:5000/auth/microsoft/callback',
+},function(accessToken, refreshToken, profile, done){
+    const microsoft={
+        accessToken: accessToken,
+        refreshToken: refreshToken
+    };
+    const email=profile.emails[0].value;
+    User.findOne({
+        'username':email
+    }, function(err,user){
+        if(err){
+            return done(err);
+        }
+        if(!user){            
+            const user=new User({
+                username: email,
+                microsoft: microsoft
+            });
+            user.save(function(err){
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    return done(err, user);
+                }
+            });
+        }
+        else{
+            user.microsoft=microsoft;
+            user.save(function(err){
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    return done(err,user);
+                }
+            });
+        }
+    });
+}))
 // user serialization
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
@@ -160,9 +205,30 @@ const gmiddle=function(req,res,next){
     }
 }
 
+const outmiddle=function(req,res,next){
+    if(req.isAuthenticated()){
+        User.findById(req.user.id,function(err,user){
+            if(err){
+                console.log(err);
+                res.redirect('/auth/microsoft');
+            }else{
+                if(user.microsoft.accessToken){// refresh access token
+                    return next();
+                }
+                else{
+                    res.redirect('/auth/microsoft');
+                }
+            }
+        });
+    }else{
+        res.redirect('/auth/microsoft');
+    }
+}
+
 const port=process.env.PORT || 5000;
  // all routes
  // home route
+ // remove under development heading
 app.get('/',function(req,res){
     res.render('home');
 });
@@ -343,27 +409,28 @@ app.get('/google',gmiddle,function(req,res){
         }else{
             const auth=getAuth(user.google.accessToken,user.google.refreshToken);   
             const events=await listEvents(auth);
-            const eventsfinal=await events.reduce(function(acc,event){
-                var when = event.start.dateTime;
-                if (!when) {
-                    when = event.start.date;
-                }
-                var to = event.end.dateTime;
-                if (!to) {
-                    to = event.end.date;
-                }
-                const obj={
-                    summary: event.summary,
-                    when: when,
-                    to: to
-                }
-                acc.push(obj);
-                return acc;
-            },[]);
-            res.render('google',{events:await eventsfinal});
+            res.render('google',{events:events});
         }
     });
 });
+
+// outlook calendar route
+app.get('/outlook',outmiddle,function(req,res){
+    User.findById(req.user.id, async function(err, user){
+        if(err){
+            console.log(err);
+            res.redirect('/');
+        }
+        else{
+            const auth=getGraphAuth(user.microsoft.accessToken);
+            const now=new Date();
+            const end=new Date();
+            end.setDate(end.getDate()+1);
+            const events=await getCalendarView(auth,now.toISOString(),end.toISOString());
+            res.render('microsoft',{events: events.value});
+        }
+    })
+})
 
 // timer route
 app.get('/timer',middleware,function(req,res){
@@ -518,10 +585,27 @@ app.get('/auth/google', passport.authenticate('google',{
       accessType:'offline'
 }));
 
+// use authorize instead of authenticate to merge accounts
+
 // google oauth callback route
 app.get('/callback',passport.authenticate('google',{
     failureRedirect:'/login',
     successRedirect: '/google'
+}));
+
+// microsoft oauth route
+app.get('/auth/microsoft', passport.authenticate('microsoft',{
+    scope: ['user.read',
+    'calendars.readwrite',
+    'mailboxsettings.read'
+    ],
+    accessType:'offline'
+}));
+
+// microsoft oauth callback route
+app.get('/auth/microsoft/callback',passport.authenticate('microsoft',{
+    failureRedirect:'/login',
+    successRedirect: '/outlook'
 }));
 
 // user register route

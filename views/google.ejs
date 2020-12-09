@@ -1,23 +1,33 @@
 <%-include("partials/header.ejs")%>
     <link type='text/css' rel='stylesheet' href='/stylesheets/google.css'>    
     <div class="container h-100">
-    <a href="/">
-  <span class="glyphicon glyphicon-home" aria-hidden="true"></span></a>
-  <div class="container first">  
-    <br>  
-      <h1> Google Calendar <img src="../assets/google-calendar-48.png"></h1>
-  
-    <br>
-    <p>Upcoming Events in 24 hours:</p>
-    <div class="panel panel-default">
-    <p id="content" class="panel-body" style="white-space: pre-wrap; text-align-last: right;">
-      <% events.forEach(function(event){%>
-        <span><%=event.summary%>  Starts:(<%=new Date(event.when)%>)</span>
-        <span>Ends:(<%=new Date(event.to)%>)</span>
-      <%})%>
-    </p>
-  </div>
+      <div class="container first">  
+        <br>  
+          <h1> Google Calendar <img src="../assets/google-calendar-48.png"></h1>      
+        <br>
 
+        <p>Upcoming Events in 24 hours:</p>
+
+        <div class="table-responsive x">
+          <table class="table table-hover">
+              <thead class="thead-dark">
+                  <tr>
+                  <th scope="col">Title</th>
+                  <th scope="col">Start</th>
+                  <th scope="col">End</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <% events.forEach(function(event){%>
+                  <tr>
+                      <td><%=event.summary%></td>
+                      <td><%=new Date(event.start.dateTime).toLocaleString()%></td>
+                      <td><%=new Date(event.end.dateTime).toLocaleString()%></td>
+                  </tr>
+                  <%})%>
+              </tbody>
+          </table>
+        </div>
+      </div>
     </div>
-  </div>
 <%-include("partials/footer.ejs")%>
