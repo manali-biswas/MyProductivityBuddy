@@ -128,7 +128,7 @@ $(document).on('click','.decadebtn',function(event){
     var id=$(this).attr('id');
     var t=$('.dropdown-toggle');
     t.html('Year');
-    date=new Date(id,0,1);
+    date=new Date(id,0,2);
     $.ajax({type:'POST',url:'/events/year',data:{date:date},success:function(result){
         $('#year').html(result);
     }});
@@ -149,7 +149,7 @@ $(document).on('click','.yearbtn',function(event){
     var id=$(this).attr('id');
     var t=$('.dropdown-toggle');
     t.html('Month');
-    date=new Date(date.getFullYear(),keys[id],1);
+    date=new Date(date.getFullYear(),keys[id],2);
     $.ajax({type:'POST',url:'/events/month',data:{date:date},success:function(result){
         $('#month').html(result);
     }});
