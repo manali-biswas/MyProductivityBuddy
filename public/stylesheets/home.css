@@ -1,19 +1,80 @@
-html,body{
+html,body,main{
     height: 100%;
     width: 100%;
+    margin:0;
+    padding:0;
 }
-main{    
-    height: 100%;
-    width: 100%;
+
+.first{    
+    background-color: rgb(124, 252, 151);
+}
+
+.third{
+    background-color: #7df9ff;
+}
+
+.fourth{
+    background-color: #fdfd4c;
+}
+
+.fifth{
+    background-color:#ff8300;
+}
+
+section{
+    min-width: 100vw;
+    min-height: 100vh;    
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: rgb(192, 255, 197);
 }
 
+.row{
+    width:100%;
+}
+
+#ticking{
+    width: 600px;
+}
 
 .buttons{
     flex-direction: row;
     align-items: center;
+}
+
+h1,h2{
+    text-decoration: underline;
+    padding-bottom: 3em;
+}
+
+.x{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.y{
+    width: 75%;
+    margin-top: 5em;
+    border-top: 4px solid rgb(212, 71, 71);
+    margin-bottom: 3em;
+}
+
+.verticalslide{
+    text-align: left;
+}
+
+.verticalslide li{
+    text-align: left;
+    color: rgb(212, 71, 71);
+    opacity:0;
+    overflow: hidden;
+    position: absolute;
+}
+
+.l{
+    font-weight: 600;
 }

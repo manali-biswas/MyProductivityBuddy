@@ -6,21 +6,120 @@
         <title>My Productivity Buddy</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://animejs.com/lib/anime.min.js"></script>
         <link type='text/css' rel='stylesheet' href='/stylesheets/home.css'>
     </head>
     <body>
         <main>
+            <section class="first">
+                <div class="container">
         <h1>
-            Hi There!
+            Productivity Buddy
         </h1>
-        <h2>
-            This is a productivity web app in development!
-        </h2>
+        <br>
+        <ul class="verticalslide">
+            <a href="#events"><li><h3>Create events</h3></li></a>
+            <a href="#timers"><li><h3>Timers for chores</h3></li></a>
+            <a href="#tasks"><li><h3>Make and monitor tasks</h3></li></a>
+            <li><h3>Check deadlines with your Microsoft and Google accounts</h3></li>
+        </ul>
+    <div class="y"></div>
+        <h5>
+            Your one-stop shop for managing your day!
+        </h5>
         <div class="buttons">
-        <a class='btn btn-success' role='button' href='/google'>See your google calendar events</a> 
-        <a class='btn btn-warning' role='button' href='/timer'>Set a timer</a>   
+        <a class='btn btn-success' role='button' href='/signup'>Register Now!</a> 
+        <a class='btn btn-warning' role='button' href='/login'>Login to your account</a>   
         </div>
-    </main>
+    </div>
+    </section>
+    <section class="second">
+        <div class="container x">
+        <div id="ticking">
+        </div>
+        <h6 class="text-center">
+            Put all your goals and deadlines in one place. Track your tasks and get all your work done on time. Say no to hassles, yes to progress and me-time. Make the most of your time using Productivity Buddy.
+        </h6>
+        <br><br>
+    </div>
+    </section>
+    <section class="third" id="events">
+        <div class="container x">
+        <h2>Events</h2>
+        <div class="row">            
+            <div class="col-sm-8 l">
+                <p>Mark your calendar for all important events. Prep well for presentations, shop for your spouse's birthday and finish your assignments on time.
+                    Never miss any event (and never forget your anniversary)!
+                </p>
+            </div>
+            <div class="col-sm-4">
+                <img src="../assets/Teaching.png">
+            </div>
+        </div>
+        </div>
+    </section>    
+    <section class="fourth" id="timers">
+        <div class="container x">
+        <h2>Timers</h2>
+        <div class="row">
+            <div class="col-sm-4">
+                <img src="../assets/Clock.png">
+            </div>
+            <div class="col-sm-8 l">
+                <p>Set timers for all micro-jobs. Time your self-exams, presentations, exercises and cooking sessions.
+                    Work done on time spells more me-time!
+                </p>
+            </div>
+        </div>
+    </div>
+    </section>
+    <section class="fifth" id="tasks">
+        <div class="container x">
+        <h2>Tasks</h2>
+        <div class="row">              
+            <div class="col-sm-4">
+                <img src="../assets/PDF.png">
+            </div>          
+            <div class="col-sm-8 l">
+                <p>Make and save tasks to keep track of all chores. Submit all assignments on time and run your errands.
+                    Monitor all your work without any hassle.
+                </p>
+            </div>
+        </div>
+        </div>
+    </section>
+    <section>
+        <div>
+        <img src="../assets/google.png">
+        <img src="../assets/microsoft.png">
+        </div>
+        <div class="container text-center">
+            <h5>Check your Google and Microsoft calendars.</h5>
+            <br><br>
+            <img src="../assets/Book Apple.png">
+            <h6>Increase your productivity and get time out for yourself. Create an account today!</h6>
+        </div>
+    </section>
+    <footer class="footer mt-auto py-3 bg-dark text-light" style="position:relative; bottom: 0; width:100%;">
+        <div class="container-fluid p-3">
+            <div class="text-center">
+                <div>
+                    <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-calendar-check-fill" fill="green" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4V.5zM16 14V5H0v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2zm-5.146-5.146a.5.5 0 0 0-.708-.708L7.5 10.793 6.354 9.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"/>
+                    </svg>
+                    <span>Productivity Buddy</span>
+                </div>
+                <br>
+                <div class="text-muted">
+                    &copy; Manali Biswas 2020
+                    </div>
+            </div>        
+        </div>
+    </footer>
+
+</main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.5.3/lottie.js"></script>
+    <script src="../logic/home.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
 </body>
 </html>

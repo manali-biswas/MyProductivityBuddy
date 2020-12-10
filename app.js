@@ -37,8 +37,8 @@ app.use(passport.session());
 // defining passport strategies
 passport.use(new localStrategy(User.authenticate()));
 passport.use(new GoogleStrategy({
-    clientID: '991368878610-364g8bvnm8of93tsvfdk56s7gkl3bf2u.apps.googleusercontent.com',
-    clientSecret: 'yugmojWz1n5BB_SZEGIreXsD',
+    clientID: 'your client id',
+    clientSecret: 'Your client secret',
     callbackURL: 'http://localhost:5000/callback'
 }, function(accessToken, refreshToken, profile, done){
     const google={
@@ -79,8 +79,8 @@ passport.use(new GoogleStrategy({
     });
 }));
 passport.use(new MicrosoftStrategy({
-    clientID: '14c15fd0-d4e1-4347-ab3e-dc6126fd9340',
-    clientSecret: 'dZ~n-IfU0x~8b7rMO4_w.lt2-52can0-W_',
+    clientID: 'your client id',
+    clientSecret: 'your client secret',
     callbackURL: 'http://localhost:5000/auth/microsoft/callback',
 },function(accessToken, refreshToken, profile, done){
     const microsoft={
