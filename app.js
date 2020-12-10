@@ -39,8 +39,7 @@ passport.use(new localStrategy(User.authenticate()));
 passport.use(new GoogleStrategy({
     clientID: '991368878610-364g8bvnm8of93tsvfdk56s7gkl3bf2u.apps.googleusercontent.com',
     clientSecret: 'yugmojWz1n5BB_SZEGIreXsD',
-    callbackURL: ['http://localhost:5000/callback',
-    'http://myproductivitybuddy.herokuapp.com/callback']
+    callbackURL: '../callback'
 }, function(accessToken, refreshToken, profile, done){
     const google={
         accessToken: accessToken,
@@ -82,8 +81,7 @@ passport.use(new GoogleStrategy({
 passport.use(new MicrosoftStrategy({
     clientID: '14c15fd0-d4e1-4347-ab3e-dc6126fd9340',
     clientSecret: 'dZ~n-IfU0x~8b7rMO4_w.lt2-52can0-W_',
-    callbackURL: ['http://localhost:5000/auth/microsoft/callback',
-    'https://myproductivitybuddy.herokuapp.com/auth/microsoft/callback']
+    callbackURL: '/auth/microsoft/callback'
 },function(accessToken, refreshToken, profile, done){
     const microsoft={
         accessToken: accessToken,
