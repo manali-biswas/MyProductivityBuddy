@@ -81,7 +81,7 @@ passport.use(new GoogleStrategy({
 passport.use(new MicrosoftStrategy({
     clientID: '14c15fd0-d4e1-4347-ab3e-dc6126fd9340',
     clientSecret: 'dZ~n-IfU0x~8b7rMO4_w.lt2-52can0-W_',
-    callbackURL: '/auth/microsoft/callback'
+    callbackURL: 'https://myproductivityapp.herokuapp.com/auth/microsoft/callback'
 },function(accessToken, refreshToken, profile, done){
     const microsoft={
         accessToken: accessToken,
