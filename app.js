@@ -69,18 +69,38 @@ const googlestrategy=new GoogleStrategy({
     });
     }
     else{
-         const user=new User({
-                username: profile.emails[0].value,
-                google: google
-            });
-            user.save(function(err){
-                if(err){
-                    console.log(err);
-                }
-                else{
-                    return done(err, user);
-                }
-            });
+        User.findOne({
+            'username':profile.emails[0].value
+        }, function(err,user){
+            if(err){
+                return done(err);
+            }
+            if(!user){
+                const user=new User({
+                    username: profile.emails[0].value,
+                    google: google
+                });
+                user.save(function(err){
+                    if(err){
+                        console.log(err);
+                    }
+                    else{
+                        return done(err, user);
+                    }
+                });
+            }
+            else{
+                user.google=google;
+                user.save(function(err){
+                    if(err){
+                        console.log(err);
+                    }
+                    else{
+                        return done(err,user);
+                    }
+                });
+            }
+        });         
     }
 });
 passport.use(googlestrategy);
@@ -104,31 +124,40 @@ const microsoftstrategy=new MicrosoftStrategy({
             return done(err);
         }
         else{
-            user.microsoft=microsoft;
-            user.save(function(err){
+            User.findOne({
+                'username':profile.emails[0].value
+            }, function(err,user){
                 if(err){
-                    console.log(err);
+                    return done(err);
+                }
+                if(!user){
+                    const user=new User({
+                        username: profile.emails[0].value,
+                        microsoft: microsoft
+                    });
+                    user.save(function(err){
+                        if(err){
+                            console.log(err);
+                        }
+                        else{
+                            return done(err, user);
+                        }
+                    });
                 }
                 else{
-                    return done(err,user);
+                    user.microsoft=microsoft;
+                    user.save(function(err){
+                        if(err){
+                            console.log(err);
+                        }
+                        else{
+                            return done(err,user);
+                        }
+                    });
                 }
             });
         }
     });
-    }
-    else{           
-        const user=new User({
-                username: profile.emails[0].value,
-                microsoft: microsoft
-            });
-            user.save(function(err){
-                if(err){
-                    console.log(err);
-                }
-                else{
-                    return done(err, user);
-                }
-            });
     }
 });
 passport.use(microsoftstrategy);
