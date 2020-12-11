@@ -236,7 +236,7 @@ const gmiddle=function(req,res,next){
                 console.log(err);
                 res.redirect('/auth/google');
             }else{
-                if(user.google.refreshToken){
+                if(user.google.refreshToken && user.google.refreshToken != null){
                     refresh.requestNewAccessToken('google',user.google.refreshToken,function(err,accessToken,refreshToken){
                         user.google.accessToken=accessToken;
                         user.google.refreshToken=refreshToken;
