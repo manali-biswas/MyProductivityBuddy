@@ -249,7 +249,6 @@ const outmiddle=function(req,res,next){
 
 const port=process.env.PORT || 5000;
  // all routes
- // add a feedback route
  // home route
 app.get('/',function(req,res){
     res.render('home');

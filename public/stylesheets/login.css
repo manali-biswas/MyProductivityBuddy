@@ -35,3 +35,14 @@ main{
 .k{
     text-align: center;
 }
+
+
+@font-face{
+    font-family: 'notosans';
+    src: url('../assets/Noto_Sans/NotoSans-Regular.ttf') format('truetype');
+}
+
+h1,h2{
+    font-family: 'notosans', sans-serif;
+    font-weight: 700;
+}

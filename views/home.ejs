@@ -27,10 +27,15 @@
         <h5>
             Your one-stop shop for managing your day!
         </h5>
+        <% if(!currentUser){%>
         <div class="buttons">
         <a class='btn btn-success' role='button' href='/signup'>Register Now!</a> 
         <a class='btn btn-warning' role='button' href='/login'>Login to your account</a>   
         </div>
+        <%}else{%>
+            <br>
+            <img src="../assets/Notes.png" width="100rem">
+            <%}%>
     </div>
     </section>
     <section class="second">
