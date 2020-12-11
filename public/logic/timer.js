@@ -4,17 +4,21 @@ function PlaySound(soundObj){
 }
 
 $(".start").on("click",function(event){
+    if(window.func != undefined && window.func != 'undefined'){
+        clearInterval(window.func);
+    }
+
     document.getElementById("timeleft").innerHTML='';
     document.getElementById("timeup").innerHTML='';
     event.stopPropagation();
-    var hours=$("#hours").val()
-    var minutes=$("#minutes").val()
-    var seconds=$("#seconds").val()
+    var hours=parseInt($("#hours").val());
+    var minutes=parseInt($("#minutes").val());
+    var seconds=parseInt($("#seconds").val());
     var total=(hours*60*60+minutes*60+seconds)*1000+2000;
     var start=Date.now();
     var left;
     
-    var func=setInterval(function(){
+    window.func=setInterval(function(){
         left=total-(Date.now()-start);
         var string='';
         string+=Math.floor(left/(1000*60*60));
@@ -27,11 +31,10 @@ $(".start").on("click",function(event){
         console.log(string);
         if(left<0){
             document.getElementById("timeleft").innerHTML='0:0:0';
-            clearInterval(func);
+            clearInterval(window.func);
             document.getElementById("timeup").innerHTML='Time Up!';
             PlaySound("sound1");
-        }
-        
+        }    
     },1000);   
 });
 
