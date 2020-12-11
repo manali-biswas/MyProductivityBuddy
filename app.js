@@ -38,8 +38,8 @@ app.use(passport.session());
 // defining passport strategies
 passport.use(new localStrategy(User.authenticate()));
 const googlestrategy=new GoogleStrategy({
-    clientID: 'your client id',
-    clientSecret: 'your client secret',
+    clientID: '991368878610-364g8bvnm8of93tsvfdk56s7gkl3bf2u.apps.googleusercontent.com',
+    clientSecret: 'yugmojWz1n5BB_SZEGIreXsD',
     callbackURL: '../callback',
     passReqToCallback:true
 }, function(req,accessToken, refreshToken, profile, done){
@@ -86,8 +86,8 @@ const googlestrategy=new GoogleStrategy({
 passport.use(googlestrategy);
 // http://localhost:5000/auth/microsoft/callback
 const microsoftstrategy=new MicrosoftStrategy({
-    clientID: 'your client id',
-    clientSecret: 'your client secret',
+    clientID: '14c15fd0-d4e1-4347-ab3e-dc6126fd9340',
+    clientSecret: 'dZ~n-IfU0x~8b7rMO4_w.lt2-52can0-W_',
     callbackURL: 'https://myproductivitybuddy.herokuapp.com/auth/microsoft/callback',
     passReqToCallback:true
 },function(req,accessToken, refreshToken, profile, done){
