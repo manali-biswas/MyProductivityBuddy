@@ -13,6 +13,7 @@ const Task=require('./models/task');
 const Event=require('./models/event');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const MicrosoftStrategy = require('passport-microsoft').Strategy;
+const refresh = require('passport-oauth2-refresh');
 const {getAuth, listEvents}=require('./public/logic/google');
 const {getGraphAuth, getCalendarView}=require('./public/logic/microsoft');
 
@@ -36,34 +37,23 @@ app.use(passport.session());
 
 // defining passport strategies
 passport.use(new localStrategy(User.authenticate()));
-passport.use(new GoogleStrategy({
+const googlestrategy=new GoogleStrategy({
     clientID: '991368878610-364g8bvnm8of93tsvfdk56s7gkl3bf2u.apps.googleusercontent.com',
     clientSecret: 'yugmojWz1n5BB_SZEGIreXsD',
-    callbackURL: '../callback'
-}, function(accessToken, refreshToken, profile, done){
+    callbackURL: '../callback',
+    passReqToCallback:true
+}, function(req,accessToken, refreshToken, profile, done){
     const google={
         accessToken: accessToken,
         refreshToken: refreshToken
     };
+    
+    if(req.user){//checking is user logged in
     User.findOne({
-        'username':profile.emails[0].value
+        'username':req.user.username
     }, function(err,user){
         if(err){
             return done(err);
-        }
-        if(!user){            
-            const user=new User({
-                username: profile.emails[0].value,
-                google: google
-            });
-            user.save(function(err){
-                if(err){
-                    console.log(err);
-                }
-                else{
-                    return done(err, user);
-                }
-            });
         }
         else{
             user.google=google;
@@ -77,28 +67,11 @@ passport.use(new GoogleStrategy({
             });
         }
     });
-}));
-// http://localhost:5000/auth/microsoft/callback
-passport.use(new MicrosoftStrategy({
-    clientID: '14c15fd0-d4e1-4347-ab3e-dc6126fd9340',
-    clientSecret: 'dZ~n-IfU0x~8b7rMO4_w.lt2-52can0-W_',
-    callbackURL: 'https://myproductivitybuddy.herokuapp.com/auth/microsoft/callback'
-},function(accessToken, refreshToken, profile, done){
-    const microsoft={
-        accessToken: accessToken,
-        refreshToken: refreshToken
-    };
-    const email=profile.emails[0].value;
-    User.findOne({
-        'username':email
-    }, function(err,user){
-        if(err){
-            return done(err);
-        }
-        if(!user){            
-            const user=new User({
-                username: email,
-                microsoft: microsoft
+    }
+    else{
+         const user=new User({
+                username: profile.emails[0].value,
+                google: google
             });
             user.save(function(err){
                 if(err){
@@ -108,6 +81,27 @@ passport.use(new MicrosoftStrategy({
                     return done(err, user);
                 }
             });
+    }
+});
+passport.use(googlestrategy);
+// http://localhost:5000/auth/microsoft/callback
+const microsoftstrategy=new MicrosoftStrategy({
+    clientID: '14c15fd0-d4e1-4347-ab3e-dc6126fd9340',
+    clientSecret: 'dZ~n-IfU0x~8b7rMO4_w.lt2-52can0-W_',
+    callbackURL: 'https://myproductivitybuddy.herokuapp.com/auth/microsoft/callback',
+    passReqToCallback:true
+},function(req,accessToken, refreshToken, profile, done){
+    const microsoft={
+        accessToken: accessToken,
+        refreshToken: refreshToken
+    };
+
+    if(req.user){// checking if user logged in
+    User.findOne({
+        'username':req.user.username
+    }, function(err,user){
+        if(err){
+            return done(err);
         }
         else{
             user.microsoft=microsoft;
@@ -121,10 +115,28 @@ passport.use(new MicrosoftStrategy({
             });
         }
     });
-}))
+    }
+    else{           
+        const user=new User({
+                username: profile.emails[0].value,
+                microsoft: microsoft
+            });
+            user.save(function(err){
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    return done(err, user);
+                }
+            });
+    }
+});
+passport.use(microsoftstrategy);
 // user serialization
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+refresh.use(googlestrategy);
+refresh.use(microsoftstrategy);
 
 app.use(function(req,res,next){
     res.locals.currentUser = req.user;
@@ -193,7 +205,11 @@ const gmiddle=function(req,res,next){
                 console.log(err);
                 res.redirect('/auth/google');
             }else{
-                if(user.google.accessToken){// refresh access token
+                if(user.google.refreshToken){
+                    refresh.requestNewAccessToken('google',user.google.refreshToken,function(err,accessToken,refreshToken){
+                        user.google.accessToken=accessToken;
+                        user.save();
+                    })
                     return next();
                 }
                 else{
@@ -213,7 +229,11 @@ const outmiddle=function(req,res,next){
                 console.log(err);
                 res.redirect('/auth/microsoft');
             }else{
-                if(user.microsoft.accessToken){// refresh access token
+                if(user.microsoft.refreshToken){
+                    refresh.requestNewAccessToken('microsoft',user.microsoft.refreshToken,function(err,accessToken,refreshToken){
+                        user.microsoft.accessToken=accessToken;
+                        user.save();
+                    })
                     return next();
                 }
                 else{
@@ -423,7 +443,7 @@ app.get('/outlook',outmiddle,function(req,res){
             res.redirect('/');
         }
         else{
-            const auth=getGraphAuth(user.microsoft.accessToken);
+            const auth=getGraphAuth(user.microsoft.accessToken,user.microsoft.refreshToken);
             const now=new Date();
             const end=new Date();
             end.setDate(end.getDate()+1);
@@ -598,9 +618,11 @@ app.get('/callback',passport.authenticate('google',{
 app.get('/auth/microsoft', passport.authenticate('microsoft',{
     scope: ['user.read',
     'calendars.readwrite',
-    'mailboxsettings.read'
+    'mailboxsettings.read',
+    "offline_access"
     ],
-    accessType:'offline'
+    accessType:'offline',
+    approvalPrompt: 'force'
 }));
 
 // microsoft oauth callback route
