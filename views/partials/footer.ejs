@@ -32,8 +32,12 @@
         </div>
         <div class="col-md-4">
             <ul style="list-style-type: none;">
+                <% if(currentUser){%>                    
+            <a href="/logout"><li class="text-muted">Logout</li></a>
+                    <%}else{%>
             <a href="/signup"><li class="text-muted">Register</li></a>
             <a href="/login"><li class="text-muted">Login</li></a>
+            <%}%>
             <a href="https://forms.gle/KLsWHyHUEzcAYAxt8"><li class="text-muted">Feedback</li></a>
         </ul>
         </div>
