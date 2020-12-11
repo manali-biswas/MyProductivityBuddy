@@ -236,12 +236,12 @@ const gmiddle=function(req,res,next){
                 console.log(err);
                 res.redirect('/auth/google');
             }else{
-                if(user.google.refreshToken && user.google.refreshToken != null){
-                    refresh.requestNewAccessToken('google',user.google.refreshToken,function(err,accessToken,refreshToken){
+                if(user.google.accessToken){
+                    /*refresh.requestNewAccessToken('google',user.google.refreshToken,function(err,accessToken,refreshToken){
                         user.google.accessToken=accessToken;
                         user.google.refreshToken=refreshToken;
                         user.save();
-                    })
+                    })*/
                     return next();
                 }
                 else{
