@@ -40,7 +40,7 @@ passport.use(new localStrategy(User.authenticate()));
 const googlestrategy=new GoogleStrategy({
     clientID: '991368878610-364g8bvnm8of93tsvfdk56s7gkl3bf2u.apps.googleusercontent.com',
     clientSecret: 'yugmojWz1n5BB_SZEGIreXsD',
-    callbackURL: '../callback',
+    callbackURL: 'https://myproductivitybuddy.herokuapp.com/callback',
     passReqToCallback:true
 }, function(req,accessToken, refreshToken, profile, done){
     const google={
@@ -124,6 +124,20 @@ const microsoftstrategy=new MicrosoftStrategy({
             return done(err);
         }
         else{
+            user.microsoft=microsoft;
+                    user.save(function(err){
+                        if(err){
+                            console.log(err);
+                        }
+                        else{
+                            return done(err,user);
+                        }
+                    });
+                }
+            });
+        }
+        
+        else{
             User.findOne({
                 'username':profile.emails[0].value
             }, function(err,user){
@@ -144,19 +158,6 @@ const microsoftstrategy=new MicrosoftStrategy({
                         }
                     });
                 }
-                else{
-                    user.microsoft=microsoft;
-                    user.save(function(err){
-                        if(err){
-                            console.log(err);
-                        }
-                        else{
-                            return done(err,user);
-                        }
-                    });
-                }
-            });
-        }
     });
     }
 });
