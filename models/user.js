@@ -23,7 +23,8 @@ const userSchema = new mongoose.Schema({
     microsoft:{
         accessToken: String,
         refreshToken: String
-    }
+    },
+    like: Boolean
 });
 
 userSchema.plugin(passportLocalMongoose);

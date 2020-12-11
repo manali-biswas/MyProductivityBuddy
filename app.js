@@ -138,8 +138,9 @@ passport.deserializeUser(User.deserializeUser());
 refresh.use(googlestrategy);
 refresh.use(microsoftstrategy);
 
-app.use(function(req,res,next){
+app.use(async function(req,res,next){
     res.locals.currentUser = req.user;
+    res.locals.likes = await User.count({like: true});
     next();
 });
 
@@ -248,8 +249,8 @@ const outmiddle=function(req,res,next){
 
 const port=process.env.PORT || 5000;
  // all routes
+ // add a feedback route
  // home route
- // remove under development heading
 app.get('/',function(req,res){
     res.render('home');
 });
@@ -664,6 +665,22 @@ app.post('/login',passport.authenticate('local',{
 app.get('/logout',function(req,res){
     req.logout();
     res.redirect('/');
+});
+
+// like route
+app.post('/like',middleware,function(req,res){
+    User.findById(req.user.id,function(err,user){
+        if(err){
+            console.log(err);
+            res.redirect('/');
+        }
+        else{
+            if(user.like) user.like=false;
+            else user.like=true;
+            user.save();
+            res.redirect('/timer');
+        }
+    });
 });
 
 // routes listener
