@@ -100,7 +100,7 @@ const googlestrategy=new GoogleStrategy({
                     }
                 });
             }
-        });         
+        });   
     }
 });
 passport.use(googlestrategy);
@@ -239,6 +239,7 @@ const gmiddle=function(req,res,next){
                 if(user.google.refreshToken){
                     refresh.requestNewAccessToken('google',user.google.refreshToken,function(err,accessToken,refreshToken){
                         user.google.accessToken=accessToken;
+                        user.google.refreshToken=refreshToken;
                         user.save();
                     })
                     return next();
