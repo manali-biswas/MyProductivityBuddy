@@ -1,7 +1,8 @@
-</main>    
+</main>
+<br><br>
 <form action='/like' method='POST' style="display: inline;">
 <div class="container text-center">
-    <p>Liked the project? Give a heads up!</p>
+    <p><em>Liked the project? Give a heads up!</em></p>
     <% if(currentUser && currentUser.like){%>
         <button class="btn btn-outline-danger">
             <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-suit-heart-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -43,6 +44,7 @@
         </div>
         <div class="col-md-4">
             <ul style="list-style-type: none;">
+                <a href="/"><li class="text-muted">Home</li></a>
                 <a href="/timer"><li class="text-muted">Timers</li></a>
                 <a href="/events"><li class="text-muted">Events</li></a>
                 <a href="/tasks"><li class="text-muted">Tasks</li></a>

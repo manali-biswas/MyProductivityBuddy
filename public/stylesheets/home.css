@@ -63,6 +63,11 @@ section{
     src: url('../assets/Lato/Lato-BoldItalic.ttf') format('truetype');
 }
 
+@font-face{
+    font-family: 'notosansi';
+    src: url('../assets/Noto_Sans/NotoSans-Italic.ttf') format('truetype');
+}
+
 h1,h2{
     font-family: 'notosans', sans-serif;
     font-weight: 600;
@@ -123,5 +128,10 @@ a:hover{
 }
 
 .l{
+    font-weight: 600;
+}
+
+em{
+    font-family: 'notosans';
     font-weight: 600;
 }
