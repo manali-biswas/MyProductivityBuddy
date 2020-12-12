@@ -126,8 +126,7 @@ const microsoftstrategy=new MicrosoftStrategy({
     passReqToCallback:true
 },function(req,accessToken, refreshToken, profile, done){
     const microsoft={
-        accessToken: accessToken,
-        refreshToken: refreshToken
+        accessToken: accessToken
     };
 
     if(req.user){// checking if user logged in
@@ -276,7 +275,7 @@ const gmiddle=async function(req,res,next){
                 console.log(err);
                 res.redirect('/');
             }else{
-                if(user.google.refreshToken && user.google.refreshToken!=null){
+                if(user.google && user.google.refreshToken && user.google.refreshToken!=null){
                     await refresh.requestNewAccessToken('google',user.google.refreshToken,function(err,accessToken,refreshToken){
                         user.google.accessToken=accessToken;
                         user.save();
@@ -300,7 +299,7 @@ const outmiddle=function(req,res,next){
                 console.log(err);
                 res.redirect('/auth/microsoft');
             }else{
-                if(user.microsoft.refreshToken && user.microsoft.refreshToken!=null){
+                if(user.microsoft && user.microsoft.refreshToken && user.microsoft.refreshToken!=null){
                     refresh.requestNewAccessToken('microsoft',user.microsoft.refreshToken,function(err,accessToken,refreshToken){
                         user.microsoft.accessToken=accessToken;
                         user.save();
