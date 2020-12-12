@@ -100,6 +100,15 @@ h1,h2{
     margin-bottom: 3em;
 }
 
+a{
+    color: inherit;
+}
+
+a:hover{
+    color: inherit;
+    text-decoration: inherit;
+}
+
 .verticalslide{
     text-align: left;
 }

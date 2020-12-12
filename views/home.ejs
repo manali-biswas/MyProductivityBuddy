@@ -49,6 +49,9 @@
     </div>
     </section>
     <section class="third" id="events">
+        <%if(currentUser){%>
+        <a href="/events" class="disabled">
+            <%}%>
         <div class="container x">
         <h2>Events</h2>
         <div class="row">            
@@ -62,8 +65,14 @@
             </div>
         </div>
         </div>
+        <%if(currentUser){%>
+        </a>
+        <%}%>
     </section>    
     <section class="fourth" id="timers">
+        <%if(currentUser){%>
+            <a href="/timer" class="disabled">
+                <%}%>
         <div class="container x">
         <h2>Timers</h2>
         <div class="row">
@@ -77,8 +86,14 @@
             </div>
         </div>
     </div>
+    <%if(currentUser){%>
+    </a>
+    <%}%>
     </section>
     <section class="fifth" id="tasks">
+        <%if(currentUser){%>
+            <a href="/tasks" class="disabled">
+                <%}%>
         <div class="container x">
         <h2>Tasks</h2>
         <div class="row">              
@@ -92,6 +107,9 @@
             </div>
         </div>
         </div>
+        <%if(currentUser){%>
+        </a>
+        <%}%>
     </section>
     <section>
         <div>
@@ -99,7 +117,13 @@
         <img src="../assets/microsoft.png">
         </div>
         <div class="container text-center">
+            <%if(currentUser){%>
+                <a href="/events" class="disabled">
+                    <%}%>
             <h5>Check your Google and Microsoft calendars.</h5>
+            <%if(currentUser){%>
+            </a>
+            <%}%>
             <br><br>
             <img src="../assets/Book Apple.png">
             <h6>Increase your productivity and get time out for yourself. Create an account today!</h6>
