@@ -40,21 +40,21 @@ passport.use(new localStrategy(User.authenticate()));
 const googlestrategy=new GoogleStrategy({
     clientID: '991368878610-364g8bvnm8of93tsvfdk56s7gkl3bf2u.apps.googleusercontent.com',
     clientSecret: 'yugmojWz1n5BB_SZEGIreXsD',
-    callbackURL: 'https://myproductivitybuddy.herokuapp.com/callback',
+    callbackURL: 'http://myproductivitybuddy.herokuapp.com/callback',
     passReqToCallback:true
-}, function(req,accessToken, refreshToken, profile, done){
+}, async function(req,accessToken, refreshToken, profile, done){
     const google={
         accessToken: accessToken
     };
     if(req.user){//checking is user logged in
-    User.findOne({
+    await User.findOne({
         'username':req.user.username
     }, function(err,user){
         if(err){
             return done(err);
         }
         else{
-            if(!user.google.refreshToken || user.microsoft.refreshToken==null)
+            if(!user.google.refreshToken || user.google.refreshToken==null)
                 user.google.refreshToken=refreshToken;
             user.google.accessToken=accessToken;
             user.save(function(err){
@@ -69,7 +69,7 @@ const googlestrategy=new GoogleStrategy({
     });
     }
     else{
-        User.findOne({
+        await User.findOne({
             'username':profile.emails[0].value
         }, function(err,user){
             if(err){
@@ -248,15 +248,15 @@ const middleware=function(req,res,next){
     res.redirect('/signup');
 }
 
-const gmiddle=function(req,res,next){
+const gmiddle=async function(req,res,next){
     if(req.isAuthenticated()){
-        User.findById(req.user.id,function(err,user){
+        User.findById(req.user.id,async function(err,user){
             if(err){
                 console.log(err);
                 res.redirect('/');
             }else{
                 if(user.google.refreshToken && user.google.refreshToken!=null){
-                    refresh.requestNewAccessToken('google',user.google.refreshToken,function(err,accessToken,refreshToken){
+                    await refresh.requestNewAccessToken('google',user.google.refreshToken,function(err,accessToken,refreshToken){
                         user.google.accessToken=accessToken;
                         user.save();
                     })
