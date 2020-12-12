@@ -40,7 +40,7 @@ passport.use(new localStrategy(User.authenticate()));
 const googlestrategy=new GoogleStrategy({
     clientID: '991368878610-364g8bvnm8of93tsvfdk56s7gkl3bf2u.apps.googleusercontent.com',
     clientSecret: 'yugmojWz1n5BB_SZEGIreXsD',
-    callbackURL: 'http://localhost:5000/callback',
+    callbackURL: 'https://myproductivitybuddy.herokuapp.com/callback',
     passReqToCallback:true
 }, function(req,accessToken, refreshToken, profile, done){
     const google={
