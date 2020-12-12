@@ -40,7 +40,7 @@ passport.use(new localStrategy(User.authenticate()));
 const googlestrategy=new GoogleStrategy({
     clientID: '991368878610-364g8bvnm8of93tsvfdk56s7gkl3bf2u.apps.googleusercontent.com',
     clientSecret: 'yugmojWz1n5BB_SZEGIreXsD',
-    callbackURL: 'https://myproductivitybuddy.herokuapp.com/callback',
+    callbackURL: 'http://localhost:5000/callback',
     passReqToCallback:true
 }, function(req,accessToken, refreshToken, profile, done){
     const google={
@@ -54,9 +54,9 @@ const googlestrategy=new GoogleStrategy({
             return done(err);
         }
         else{
-            if(!user.google.refreshToken)
-                google.refreshToken=refreshToken;
-            user.google=google;
+            if(!user.google.refreshToken || user.microsoft.refreshToken==null)
+                user.google.refreshToken=refreshToken;
+            user.google.accessToken=accessToken;
             user.save(function(err){
                 if(err){
                     console.log(err);
@@ -92,8 +92,8 @@ const googlestrategy=new GoogleStrategy({
             }
             else{
                 if(!user.google.refreshToken || user.google.refreshToken==null)
-                    google.refreshToken=refreshToken;
-                user.google=google;
+                    user.google.refreshToken=refreshToken;
+                user.google.accessToken=accessToken;
                 user.save(function(err){
                     if(err){
                         console.log(err);
@@ -127,9 +127,9 @@ const microsoftstrategy=new MicrosoftStrategy({
             return done(err);
         }
         else{    
-            if(!user.microsoft.refreshToken)
-                microsoft.refreshToken=refreshToken;
-            user.microsoft=microsoft;
+            if(!user.microsoft.refreshToken || user.microsoft.refreshToken==null)
+                user.microsoft.refreshToken=refreshToken;
+            user.microsoft.accessToken=accessToken;
                     user.save(function(err){
                         if(err){
                             console.log(err);
@@ -166,9 +166,9 @@ const microsoftstrategy=new MicrosoftStrategy({
                 }
                 else{
                     if(!user.microsoft.refreshToken || user.microsoft.refreshToken==null)
-                        microsoft.refreshToken=refreshToken;
+                        user.microsoft.refreshToken=refreshToken;
 
-                    user.microsoft=microsoft;
+                    user.microsoft.accessToken=accessToken;
                     user.save(function(err){
                         if(err)
                             console.log(err);
@@ -253,7 +253,7 @@ const gmiddle=function(req,res,next){
         User.findById(req.user.id,function(err,user){
             if(err){
                 console.log(err);
-                res.redirect('/auth/google');
+                res.redirect('/');
             }else{
                 if(user.google.refreshToken && user.google.refreshToken!=null){
                     refresh.requestNewAccessToken('google',user.google.refreshToken,function(err,accessToken,refreshToken){
