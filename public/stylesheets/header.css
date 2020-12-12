@@ -16,3 +16,7 @@ em{
     font-family: 'notosans';
     font-weight: 600;
 }
+
+.alert{
+    margin-bottom: 0;
+}

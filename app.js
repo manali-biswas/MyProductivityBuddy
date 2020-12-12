@@ -14,6 +14,7 @@ const Event=require('./models/event');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const MicrosoftStrategy = require('passport-microsoft').Strategy;
 const refresh = require('passport-oauth2-refresh');
+const flash = require('connect-flash-plus');
 const {getAuth, listEvents}=require('./public/logic/google');
 const {getGraphAuth, getCalendarView}=require('./public/logic/microsoft');
 
@@ -25,6 +26,7 @@ app.use(express.static("public"));
 app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(methodOverride('_method'));
+app.use(flash());
 
 app.use(expressSession({
     secret: "Manali",
@@ -210,6 +212,9 @@ refresh.use(microsoftstrategy);
 app.use(async function(req,res,next){
     res.locals.currentUser = req.user;
     res.locals.likes = await User.count({like: true});
+    res.locals.success = req.flash("success");
+    res.locals.failure = req.flash("failure");
+    res.locals.error = req.flash("error");
     next();
 });
 
@@ -366,6 +371,7 @@ app.post('/events',middleware,function(req,res){
                     res.redirect('/');
                 }
                 else{
+                    req.flash("success","Event saved successfully!");
                     user.events.push(event);
                     user.save();
                     res.redirect('/events');
@@ -382,10 +388,12 @@ app.put('/events/:id',middleware,function(req,res){
     };
     Event.findByIdAndUpdate(req.params.id,event,function(err,task){
         if(err){
+            req.flash("failure","Something went wrong!");
             console.trace(err);
             res.redirect('/');
         }
         else{
+            req.flash("success","Event edited successfully");
             res.redirect('/events');
         }
     });
@@ -394,10 +402,12 @@ app.put('/events/:id',middleware,function(req,res){
 app.delete('/events/:id',middleware,function(req,res){
     Event.findByIdAndDelete(req.params.id,function(err){
         if(err){
+            req.flash("failure","Something went wrong!");
             console.trace(err);
             res.redirect('/');
         }
         else{
+            req.flash("success","Event deleted successfully");
             res.redirect('/events');
         }
     });
@@ -494,6 +504,7 @@ app.post('/events/decade',middleware,function(req,res){
 app.get('/google',gmiddle,function(req,res){
     User.findById(req.user.id, async function(err,user){
         if(err){
+            req.flash("failure","Something went wrong!");
             console.log(err);
             res.redirect('/');
         }else{
@@ -508,6 +519,7 @@ app.get('/google',gmiddle,function(req,res){
 app.get('/outlook',outmiddle,function(req,res){
     User.findById(req.user.id, async function(err, user){
         if(err){
+            req.flash("failure","Something went wrong!");
             console.log(err);
             res.redirect('/');
         }
@@ -551,10 +563,12 @@ app.post('/timer',middleware,function(req,res){
         else{
             Timer.create(timer, function(err, timer){
                 if(err){
+                    req.flash("failure","Something went wrong!");
                     console.trace(err);
                     res.redirect('/');
                 }
                 else{
+                    req.flash("success","Timer saved successfully!");
                     user.timers.push(timer);
                     user.save();
                     res.redirect('/timer');
@@ -573,10 +587,12 @@ app.put('/timer/:id',middleware,function(req,res){
     }
     Timer.findByIdAndUpdate(req.params.id,timer,function(err,task){
         if(err){
+            req.flash("failure","Something went wrong!");
             console.trace(err);
             res.redirect('/');
         }
         else{
+            req.flash("success","Timer edited successfully!");
             res.redirect('/timer');
         }
     });
@@ -586,10 +602,12 @@ app.put('/timer/:id',middleware,function(req,res){
 app.delete('/timer/:id',middleware,function(req,res){
     Timer.findByIdAndDelete(req.params.id,function(err){
         if(err){
+            req.flash("failure","Something went wrong!");
             console.trace(err);
             res.redirect('/');
         }
         else{
+            req.flash("success","Timer deleted successfully!");
             res.redirect('/timer');
         }
     });
@@ -627,10 +645,12 @@ app.post('/tasks',middleware,function(req,res){
         else{
             Task.create(task, function(err, task){
                 if(err){
+                    req.flash("failure","Something went wrong!");
                     console.trace(err);
                     res.redirect('/');
                 }
                 else{
+                    req.flash("success","Task saved successfully!");
                     user.tasks.push(task);
                     user.save();
                     res.redirect('/tasks');
@@ -644,10 +664,12 @@ app.post('/tasks',middleware,function(req,res){
 app.put('/tasks/:id',middleware,function(req,res){
     Task.findByIdAndUpdate(req.params.id,{title:req.body.title},function(err,task){
         if(err){
+            req.flash("failure","Something went wrong!");
             console.trace(err);
             res.redirect('/');
         }
         else{
+            req.flash("success","Task edited successfully!");
             res.redirect('/tasks');
         }
     });
@@ -657,10 +679,12 @@ app.put('/tasks/:id',middleware,function(req,res){
 app.delete('/tasks/:id',middleware,function(req,res){
     Task.findByIdAndDelete(req.params.id,function(err){
         if(err){
+            req.flash("failure","Something went wrong!");
             console.trace(err);
             res.redirect('/');
         }
         else{
+            req.flash("success","Task deleted successfully!");
             res.redirect('/tasks');
         }
     });
@@ -675,12 +699,12 @@ app.get('/auth/google', passport.authenticate('google',{
       accessType:'offline'
 }));
 
-// use authorize instead of authenticate to merge accounts
 
 // google oauth callback route
 app.get('/callback',passport.authenticate('google',{
     failureRedirect:'/login',
-    successRedirect: '/google'
+    successRedirect: '/google',
+    failureFlash: "Unable to authenticate"
 }));
 
 // microsoft oauth route
@@ -697,7 +721,8 @@ app.get('/auth/microsoft', passport.authenticate('microsoft',{
 // microsoft oauth callback route
 app.get('/auth/microsoft/callback',passport.authenticate('microsoft',{
     failureRedirect:'/login',
-    successRedirect: '/outlook'
+    successRedirect: '/outlook',
+    failureFlash: "Unable to authenticate"
 }));
 
 // user register route
@@ -709,6 +734,7 @@ app.get('/signup',function(req,res){
 app.post('/signup',function(req,res){
     User.register(new User({username:req.body.username}), req.body.password, function(err, user){
         if(err){
+            req.flash("failure","Username already exists!");
             console.trace(err);
             res.redirect('/');
         }
@@ -726,7 +752,8 @@ app.get('/login',function(req,res){
 // user login authentication route
 app.post('/login',passport.authenticate('local',{
     successRedirect: '/timer',
-    failureRedirect: '/'
+    failureRedirect: '/',
+    failureFlash: "Wrong username or password"
 }));
 
 // logout route
@@ -739,13 +766,15 @@ app.get('/logout',function(req,res){
 app.post('/like',middleware,function(req,res){
     User.findById(req.user.id,function(err,user){
         if(err){
+            req.flash("failure","Something went wrong!");
             console.log(err);
             res.redirect('/');
         }
         else{
             if(user.like) user.like=false;
             else user.like=true;
-            user.save();
+            user.save();            
+            req.flash("success","Glad you like it! Please fill the feedback form too.");
             res.redirect('/timer');
         }
     });

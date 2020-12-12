@@ -10,7 +10,20 @@
         <link type='text/css' rel='stylesheet' href='/stylesheets/home.css'>
     </head>
     <body>
-        <main>
+        <main>            
+      <% if(success && success.length>0){%>
+        <div class="alert alert-success" role="alert">
+          <%=success%>
+        </div>
+        <%}else if(failure && failure.length>0){%>
+          <div class="alert alert-danger" role="alert">
+            <%=failure%>
+          </div>
+          <%}else if(error && error.length>0){%>
+            <div class="alert alert-danger" role="alert">
+              <%=error%>
+            </div>
+            <%}%>
             <section class="first">
                 <div class="container">
         <h1>
