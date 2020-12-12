@@ -54,9 +54,15 @@ const googlestrategy=new GoogleStrategy({
             return done(err);
         }
         else{
+            if(!user.google)
+            {
+                google.refreshToken=refreshToken;
+                user.google=google;
+            }
+            else{
             if(!user.google.refreshToken || user.google.refreshToken==null)
                 user.google.refreshToken=refreshToken;
-            user.google.accessToken=accessToken;
+            user.google.accessToken=accessToken;}
             user.save(function(err){
                 if(err){
                     console.log(err);
@@ -91,9 +97,14 @@ const googlestrategy=new GoogleStrategy({
                 });
             }
             else{
+                if(!user.google)
+                {
+                    google.refreshToken=refreshToken;
+                    user.google=google;
+                }else{
                 if(!user.google.refreshToken || user.google.refreshToken==null)
                     user.google.refreshToken=refreshToken;
-                user.google.accessToken=accessToken;
+                user.google.accessToken=accessToken;}
                 user.save(function(err){
                     if(err){
                         console.log(err);
@@ -126,10 +137,15 @@ const microsoftstrategy=new MicrosoftStrategy({
         if(err){
             return done(err);
         }
-        else{    
+        else{
+            if(!user.microsoft){
+                microsoft.refreshToken=refreshToken;
+                user.microsoft=microsoft;
+            }
+            else{
             if(!user.microsoft.refreshToken || user.microsoft.refreshToken==null)
                 user.microsoft.refreshToken=refreshToken;
-            user.microsoft.accessToken=accessToken;
+            user.microsoft.accessToken=accessToken;}
                     user.save(function(err){
                         if(err){
                             console.log(err);
@@ -165,10 +181,15 @@ const microsoftstrategy=new MicrosoftStrategy({
                     });
                 }
                 else{
+                    if(!user.microsoft){
+                        microsoft.refreshToken=refreshToken;
+                        user.microsoft=microsoft;
+                    }
+                    else{
                     if(!user.microsoft.refreshToken || user.microsoft.refreshToken==null)
                         user.microsoft.refreshToken=refreshToken;
 
-                    user.microsoft.accessToken=accessToken;
+                    user.microsoft.accessToken=accessToken;}
                     user.save(function(err){
                         if(err)
                             console.log(err);
