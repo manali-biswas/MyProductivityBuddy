@@ -44,10 +44,8 @@ const googlestrategy=new GoogleStrategy({
     passReqToCallback:true
 }, function(req,accessToken, refreshToken, profile, done){
     const google={
-        accessToken: accessToken,
-        refreshToken: refreshToken
+        accessToken: accessToken
     };
-    
     if(req.user){//checking is user logged in
     User.findOne({
         'username':req.user.username
@@ -56,6 +54,8 @@ const googlestrategy=new GoogleStrategy({
             return done(err);
         }
         else{
+            if(!user.google.refreshToken)
+                google.refreshToken=refreshToken;
             user.google=google;
             user.save(function(err){
                 if(err){
@@ -76,6 +76,7 @@ const googlestrategy=new GoogleStrategy({
                 return done(err);
             }
             if(!user){
+                google.refreshToken=refreshToken;
                 const user=new User({
                     username: profile.emails[0].value,
                     google: google
@@ -90,6 +91,8 @@ const googlestrategy=new GoogleStrategy({
                 });
             }
             else{
+                if(!user.google.refreshToken || user.google.refreshToken==null)
+                    google.refreshToken=refreshToken;
                 user.google=google;
                 user.save(function(err){
                     if(err){
@@ -123,7 +126,9 @@ const microsoftstrategy=new MicrosoftStrategy({
         if(err){
             return done(err);
         }
-        else{
+        else{    
+            if(!user.microsoft.refreshToken)
+                microsoft.refreshToken=refreshToken;
             user.microsoft=microsoft;
                     user.save(function(err){
                         if(err){
@@ -145,6 +150,7 @@ const microsoftstrategy=new MicrosoftStrategy({
                     return done(err);
                 }
                 if(!user){
+                    microsoft.refreshToken=refreshToken;
                     const user=new User({
                         username: profile.emails[0].value,
                         microsoft: microsoft
@@ -157,6 +163,19 @@ const microsoftstrategy=new MicrosoftStrategy({
                             return done(err, user);
                         }
                     });
+                }
+                else{
+                    if(!user.microsoft.refreshToken || user.microsoft.refreshToken==null)
+                        microsoft.refreshToken=refreshToken;
+
+                    user.microsoft=microsoft;
+                    user.save(function(err){
+                        if(err)
+                            console.log(err);
+                        else
+                            return done(err,user);
+                    })
+                    
                 }
     });
     }
@@ -236,12 +255,11 @@ const gmiddle=function(req,res,next){
                 console.log(err);
                 res.redirect('/auth/google');
             }else{
-                if(user.google.accessToken){
-                    /*refresh.requestNewAccessToken('google',user.google.refreshToken,function(err,accessToken,refreshToken){
+                if(user.google.refreshToken && user.google.refreshToken!=null){
+                    refresh.requestNewAccessToken('google',user.google.refreshToken,function(err,accessToken,refreshToken){
                         user.google.accessToken=accessToken;
-                        user.google.refreshToken=refreshToken;
                         user.save();
-                    })*/
+                    })
                     return next();
                 }
                 else{
@@ -261,7 +279,7 @@ const outmiddle=function(req,res,next){
                 console.log(err);
                 res.redirect('/auth/microsoft');
             }else{
-                if(user.microsoft.refreshToken){
+                if(user.microsoft.refreshToken && user.microsoft.refreshToken!=null){
                     refresh.requestNewAccessToken('microsoft',user.microsoft.refreshToken,function(err,accessToken,refreshToken){
                         user.microsoft.accessToken=accessToken;
                         user.save();
